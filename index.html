@@ -1,0 +1,554 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quiz</title>
+    <style>
+        *{ padding: 0; margin: 0; }
+        .App {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .App > div {
+            padding: 0 20px;
+        }
+
+
+        .App .score {
+            margin: 15px auto;
+            display: inherit;
+            justify-content: center;
+        }
+        .App .score > div {
+            margin: 0 3px;
+        }
+        .App .score > div > span {
+            font-size: 18px;
+        }        
+        .App .score > div > .o {
+            color: blue;
+            font-weight: bold;
+        }
+        .App .score > div > .x {
+            color: red;
+            font-weight: bold;
+        }
+        .App .score > div > #nowO,
+        .App .score > div > #nowX {
+            padding-left: 3px;
+            font-size: 16px;
+        }
+
+
+        .App .question {
+            display: inherit;
+            flex-direction: column;
+        }                
+        .App .question #resultText {
+            text-indent: 20px;
+            margin: 5px 0;
+        }
+        .App .question #resultText .resultO {
+            margin-right: 5px;
+            color: blue;
+            font-weight: bold;
+        }
+        .App .question #resultText .resultX {
+            margin-right: 5px;
+            color: red;
+            font-weight: bold;
+        }
+        .App .question .questionContents {
+            display: inherit;
+        }        
+        .App .question .questionContents #sound {
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
+            border: 2px solid #000;
+            box-sizing: border-box;
+            background: #aaa;
+            cursor: pointer;
+            background: url('https://cdn3.iconfinder.com/data/icons/eightyshades/512/28_Sound-512.png') no-repeat;
+            background-size: 60% 60%;
+            background-position: 50% 50%;
+            transition-duration: 0.2s;
+            opacity: 0.5;
+        }        
+        .App .question .questionContents #sound:hover {
+            opacity: 1;
+        }        
+        .App .question .questionContents #sound:active {
+            transform: scale(0.9);
+        }        
+        .App .question .questionContents #questionText {
+            text-indent: 5px;
+            height: 30px;
+            line-height: 33px;
+        }        
+        .App .question #inputText {
+            margin: 20px 0;
+            min-height: 30px;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-indent: 15px;
+        }
+
+        .App #awnser {
+            display: inherit;
+            margin: 20px 0;
+            flex-direction: column;
+        }        
+        .App #awnser > div {
+            position: relative;
+            padding-left: 20px;
+            margin: 10px 0;
+        }               
+        .App #awnser > div::before {
+            content: "";
+            display: block;
+            position: absolute;
+            left: -10px;
+            font-size: 12px;
+            color: #888;
+        }       
+        .App #awnser #awnserText::before {
+            content: "정답";
+        }        
+        .App #awnser #inputAwnserText::before {
+            content: "내답";
+        }        
+        .App #awnser #awnserPattern::before {
+            content: "패턴";
+        }
+
+
+        .App #option {
+            display: inherit;
+            flex-direction: inherit;
+        }
+        .App #option > p {
+            font-size: 12px;
+        }
+        .App #option #optionButtons {
+            display: inherit;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .App #option #optionButtons > div {
+            margin: 10px 0;
+            width: 25%;
+            height: 30px;
+            line-height: 32px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition-duration: 0.2s;
+            cursor: pointer;
+        }
+        .App #option #optionButtons > div:hover {
+            border: 1px solid #eee;
+            background: #eee;
+            color: #000;
+        }
+        .App #option #optionButtons > div:active {
+            transform: scale(0.95);
+            background: #ddd;
+        }
+
+        .App .buttons {
+            display: inherit;
+            justify-content: inherit;
+        }
+        .App .buttons > div {
+            display: inherit;
+        }
+        .App .buttons > div > div {
+            margin: 10px 5px;
+            width: 120px;
+            height: 30px;
+            line-height: 33px;
+            text-align: center;
+            color: #fff;
+            background: rgb(10, 30, 175);
+            border: 2px solid #000;
+            transition-duration: 0.2s;
+            cursor: pointer;
+        }
+        .App .buttons > div > div:hover {
+            background: rgb(10, 30, 135);
+            color: #eee;
+        }
+        .App .buttons > div > div:active {
+            transform: scale(0.95);
+            background: rgb(10, 30, 105);
+        }
+
+
+        .nav {
+            margin: 15px auto;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid #000;
+        }
+        .nav > div {
+            margin: 0 3px;
+        }
+        .nav > div > span {
+
+        }        
+        .nav > div > .o {
+            color: blue;
+        }
+        .nav > div > .x {
+            color: red;
+        }
+        .nav > div > #arrowLeft {
+            padding-right: 20px;
+            cursor: pointer;
+        }
+        .nav > div > #arrowRight {
+            padding-left: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body onload="render()">
+    <div class="App">
+        <div class="score">
+            <div><span class="o">O</span><span id="nowO"></span></div>
+            <div>/</div>
+            <div><span class="x">X</span><span id="nowX"></span></div>
+        </div>
+        <div class="question">
+            <div id="resultText"></div>
+            <div class="questionContents">
+                <div id="sound" onclick="playSound()"></div>
+                <div id="questionText"></div>
+            </div>
+            <div id="inputText"></div>
+        </div>
+        <div id="awnser">
+            <div id="awnserText"></div>
+            <div id="inputAwnserText"></div>
+        </div>
+        <div id="option">
+            <p>* 문장의 어순에 맞게 순서대로 터치하세요</p>
+            <div id="optionButtons">
+            </div>
+        </div>
+        <div class="buttons">
+            <div id="testing">
+                <div onclick="onSubmitBtn(false)">V 채점하기</div>
+                <div onclick="onRemoveBtn(false)">← 지우기</div>
+            </div>
+            <div id="result">
+                <div onclick="onResetBtn()">다시하기</div>
+                <div onclick="onNavBtn(1)">다음문제</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <div><span id="arrowLeft" onclick="onNavBtn(-1)"><</span><span id="nowPage"></span></div>
+        <div>/</div>
+        <div><span id="page"></span><span id="arrowRight" onclick="onNavBtn(1)">></span></div>
+    </div>
+    <script>
+        // 스테이지 정보
+        let stage = [{
+            soundLink: "http://lch8798.dothome.co.kr/1.mp3",
+            question: "널 도와주길 원하면, 말만해",
+            awnser: "if you want me to help you, all you have to do is ask",
+            awnsers: [
+                "all",
+                "have",
+                "you",
+                "if",
+                "you,",
+                "to",
+                "dd",
+                "you",
+                "me",
+                "want",
+                "help",
+                "to",
+                "do",
+                "is",
+                "ask"
+            ],
+            history: [],
+            inputAwnser: [],
+            result: "default" // default, win, lose
+        },
+        {
+            soundLink: "",
+            question: "테스트용 1",
+            awnser: "1",
+            awnsers: [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            history: [],
+            inputAwnser: [],
+            result: "default" // default, win, lose
+        },
+        {
+            soundLink: "",
+            question: "테스트용 2",
+            awnser: "1 2",
+            awnsers: [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            history: [],
+            inputAwnser: [],
+            result: "default" // default, win, lose
+        },
+        {
+            soundLink: "",
+            question: "테스트용 3",
+            awnser: "1 2 3",
+            awnsers: [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            history: [],
+            inputAwnser: [],
+            result: "default" // default, win, lose
+        },
+        {
+            soundLink: "",
+            question: "테스트용 4",
+            awnser: "1 2 3 4",
+            awnsers: [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            history: [],
+            inputAwnser: [],
+            result: "default" // default, win, lose
+        }];
+
+        // 게임 정보
+        let nowO = 0,
+            nowX = 0,
+            page = stage.length,
+            nowPage = 0,
+            winSoundLink = 'http://lch8798.dothome.co.kr/win.wav',
+            loseSoundLink = 'http://lch8798.dothome.co.kr/lose.wav';
+
+        // load DOM
+        let nowODom = document.getElementById("nowO");
+        let nowXDom = document.getElementById("nowX");
+        let questionTextDom = document.getElementById("questionText");
+        let inputTextDom = document.getElementById("inputText");
+        let optionDom = document.getElementById("option");
+        let optionButtonsDom = document.getElementById("optionButtons");
+        let nowPageDom = document.getElementById("nowPage");
+        let pageDom = document.getElementById("page");
+        let testingDom = document.getElementById("testing");
+        let resultDom = document.getElementById("result");
+        let resultTextDom = document.getElementById("resultText");
+        let awnserDom = document.getElementById("awnser");
+        let awnserTextDom = document.getElementById("awnserText");
+        let inputAwnserTextDom = document.getElementById("inputAwnserText");
+
+
+
+        const onAwnserBtn = (id, document) => {
+            stage[nowPage].inputAwnser.push(document.innerText);
+            stage[nowPage].history.push(id);
+            render();
+        }
+
+        const onSubmitBtn = (clickNav) => {
+            if(!clickNav && stage[nowPage].awnsers.length != stage[nowPage].inputAwnser.length)
+                return alert("단어를 모두 나열하세요");
+            if(stage[nowPage].awnser == inputTextDom.innerText) {
+                stage[nowPage].result = "win";
+            } else {
+                stage[nowPage].result = "lose";
+            }
+
+            if(!clickNav) playResultSound(stage[nowPage].result);
+
+            render();
+        }
+
+        const onRemoveBtn = () => {
+            stage[nowPage].inputAwnser.pop();
+            stage[nowPage].history.pop();
+            render();
+        }
+
+        const onResetBtn = () => {
+            stage[nowPage].history = [];
+            stage[nowPage].inputAwnser = [];
+            stage[nowPage].result = "default";
+
+            render();
+        }
+
+        onNavBtn = (value) => {
+            if(value == -1 && nowPage <= 0)
+                return alert("첫 번째 문제입니다.");
+
+            if(value == 1 && nowPage + 1 >= page)
+                return alert("마지막 문제입니다.");
+
+            if(value == -1) {
+
+            }
+            if(value == 1) {
+                onSubmitBtn(true);
+            }
+
+            nowPage += Number(value);
+
+            render();
+        }
+
+        const render = () => {
+            // score
+            nowO = 0;
+            nowX = 0;
+            for(let key in stage) {
+                if(stage[key].result == "win")
+                    nowO++;
+                if(stage[key].result == "lose")
+                    nowX++;
+            }
+            nowODom.innerText = nowO;
+            nowXDom.innerText = nowX;
+
+            // nav
+            pageDom.innerText = page;
+            nowPageDom.innerText = nowPage + 1;
+
+            // question
+            questionTextDom.innerText = stage[nowPage].question;
+            let text = "";
+            for(let key in stage[nowPage].inputAwnser) {
+                if(key == 0)
+                    text += stage[nowPage].inputAwnser[key];
+                else
+                    text += " " + stage[nowPage].inputAwnser[key];
+            }
+            inputTextDom.innerText = text;
+
+            // awnser buttons
+            while(optionButtonsDom.hasChildNodes())
+                optionButtonsDom.removeChild(optionButtonsDom.firstChild);
+
+            for(let key in stage[nowPage].awnsers) {
+                let overlap = false;
+                for(let i in stage[nowPage].history) {
+                    if(key == Number(stage[nowPage].history[i]))
+                        overlap = true;
+                }
+                if(!overlap) {
+                    let div = document.createElement("div");
+                    let textNode = document.createTextNode(stage[nowPage].awnsers[key]);
+                    div.addEventListener('click', function(e) {
+                        onAwnserBtn(key, e.target);
+                    });
+                    div.appendChild(textNode);
+                    optionButtonsDom.appendChild(div);
+                } else {
+                    let div = document.createElement("div");
+                    optionButtonsDom.appendChild(div);
+                }
+            }
+
+            // buttons
+            if(stage[nowPage].result == "default") {
+                testingDom.style.display = "flex";
+                resultDom.style.display = "none";
+            } else {
+                testingDom.style.display = "none";
+                resultDom.style.display = "flex";
+            }
+
+            // result contents
+            if(stage[nowPage].result == "default") {
+                resultTextDom.style.display = "none";
+                inputTextDom.style.display = "flex";
+                optionDom.style.display = "flex";
+                awnserDom.style.display = "none";
+            } else {
+                resultTextDom.style.display = "flex";
+                inputTextDom.style.display = "none";
+                optionDom.style.display = "none";
+                awnserDom.style.display = "flex";
+                awnserTextDom.innerText = stage[nowPage].awnser;
+                inputAwnserTextDom.innerText = text;
+
+                if(nowPage == page){
+                    
+                }
+
+                if(stage[nowPage].result == "win") {
+                    resultTextDom.innerHTML = "<span class='resultO'>O</span> 맞았어요! 대단해요!"
+
+                }
+                if(stage[nowPage].result == "lose") {
+                    resultTextDom.innerHTML = "<span class='resultX'>X</span> 틀렸어요! ㅠ.ㅠ 다시 해보세요!"
+
+                }
+
+            }
+        }
+
+        const playSound = () => {
+            let audio = new Audio(stage[nowPage].soundLink);
+            audio.play();
+        }
+
+        const playResultSound = (result) => {
+            let audio;
+            if(result == "win")
+                audio = new Audio(winSoundLink);
+            if(result == "lose")
+                audio = new Audio(loseSoundLink);
+
+            audio.play();
+        }
+    </script>
+</body>
+</html>
