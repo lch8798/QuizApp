@@ -41,6 +41,25 @@
             font-size: 16px;
         }
 
+        .App #resultPage {
+            display: inherit;
+            flex-direction: column;
+        }            
+        .App #resultPage > div {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }            
+        .App #resultPage > div > div {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }            
+        .App #resultPage > div > div > img {
+        }    
+
 
         .App .question {
             display: inherit;
@@ -97,6 +116,7 @@
             text-indent: 15px;
         }
 
+
         .App #awnser {
             display: inherit;
             margin: 20px 0;
@@ -107,6 +127,12 @@
             padding-left: 20px;
             margin: 10px 0;
         }               
+        .App #awnser #pattern {
+            flex-direction: column;
+        }        
+        .App #awnser #pattern #en {
+            color: blue;
+        }
         .App #awnser > div::before {
             content: "";
             display: block;
@@ -121,7 +147,7 @@
         .App #awnser #inputAwnserText::before {
             content: "내답";
         }        
-        .App #awnser #awnserPattern::before {
+        .App #awnser #pattern::before {
             content: "패턴";
         }
 
@@ -158,6 +184,7 @@
             transform: scale(0.95);
             background: #ddd;
         }
+
 
         .App .buttons {
             display: inherit;
@@ -200,7 +227,7 @@
         }
         .nav > div > span {
 
-        }        
+        }
         .nav > div > .o {
             color: blue;
         }
@@ -224,7 +251,14 @@
             <div>/</div>
             <div><span class="x">X</span><span id="nowX"></span></div>
         </div>
-        <div class="question">
+        <div id="resultPage">
+            <div id="per">asd</div>
+            <div class="resultPageView">
+                <div id="resultPageText">asd</div>
+                <div class="resultPageImage"><img id="resultPageImage" src=""></div>
+            </div>
+        </div>
+        <div class="question" id="question">
             <div id="resultText"></div>
             <div class="questionContents">
                 <div id="sound" onclick="playSound()"></div>
@@ -235,6 +269,10 @@
         <div id="awnser">
             <div id="awnserText"></div>
             <div id="inputAwnserText"></div>
+            <div id="pattern">
+                <p id="en"></p>
+                <p id="kr"></p>
+            </div>
         </div>
         <div id="option">
             <p>* 문장의 어순에 맞게 순서대로 터치하세요</p>
@@ -248,32 +286,35 @@
             </div>
             <div id="result">
                 <div onclick="onResetBtn()">다시하기</div>
-                <div onclick="onNavBtn(1)">다음문제</div>
+                <div id="nextQuestion" onclick="onNavBtn(1, this)">다음문제</div>
             </div>
         </div>
     </div>
     <div class="nav">
-        <div><span id="arrowLeft" onclick="onNavBtn(-1)"><</span><span id="nowPage"></span></div>
+        <div><span id="arrowLeft" onclick="onNavBtn(-1, this)"><</span><span id="nowPage"></span></div>
         <div>/</div>
-        <div><span id="page"></span><span id="arrowRight" onclick="onNavBtn(1)">></span></div>
+        <div><span id="page"></span><span id="arrowRight" onclick="onNavBtn(1, this)">></span></div>
     </div>
     <script>
-        // 스테이지 정보
+        // 스테이지 정보 (** stage 배열 안에 객체 추가해서 문제 추가)
         let stage = [{
-            soundLink: "http://lch8798.dothome.co.kr/1.mp3",
-            question: "널 도와주길 원하면, 말만해",
-            awnser: "if you want me to help you, all you have to do is ask",
-            awnsers: [
-                "all",
-                "have",
-                "you",
+            soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+            question: "널 도와주길 원하면, 말만해", // ** 문제 질문
+            awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+            pattern: { // ** 문제 패턴
+                en: "if you want me to ~",
+                kr: "~ 내가 널 도와주길 원한다면"
+            },
+            awnsers: [ // ** 문제 선택 버튼 키워드
                 "if",
-                "you,",
-                "to",
-                "dd",
                 "you",
-                "me",
                 "want",
+                "me",
+                "to",
+                "you,",
+                "all",
+                "you",
+                "have",
                 "help",
                 "to",
                 "do",
@@ -288,17 +329,12 @@
             soundLink: "",
             question: "테스트용 1",
             awnser: "1",
+            pattern: {
+                en: "1",
+                kr: "일"
+            },
             awnsers: [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10"
+                "1"
             ],
             history: [],
             inputAwnser: [],
@@ -308,17 +344,13 @@
             soundLink: "",
             question: "테스트용 2",
             awnser: "1 2",
+            pattern: {
+                en: "1 2",
+                kr: "일 이"
+            },
             awnsers: [
                 "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10"
+                "2"
             ],
             history: [],
             inputAwnser: [],
@@ -328,17 +360,14 @@
             soundLink: "",
             question: "테스트용 3",
             awnser: "1 2 3",
+            pattern: {
+                en: "1 2 3",
+                kr: "일 이 삼"
+            },
             awnsers: [
                 "1",
                 "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10"
+                "3"
             ],
             history: [],
             inputAwnser: [],
@@ -348,17 +377,15 @@
             soundLink: "",
             question: "테스트용 4",
             awnser: "1 2 3 4",
+            pattern: {
+                en: "1 2 3 4",
+                kr: "일 이 삼 사"
+            },
             awnsers: [
                 "1",
                 "2",
                 "3",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10"
+                "4"
             ],
             history: [],
             inputAwnser: [],
@@ -370,8 +397,10 @@
             nowX = 0,
             page = stage.length,
             nowPage = 0,
-            winSoundLink = 'http://lch8798.dothome.co.kr/win.wav',
-            loseSoundLink = 'http://lch8798.dothome.co.kr/lose.wav';
+            resultPage = false,
+            winSoundLink = 'http://lch8798.dothome.co.kr/win.wav', // ** 문제 맞췄을 때 음원
+            loseSoundLink = 'http://lch8798.dothome.co.kr/lose.wav'; // ** 문제 틀렸을 때 음원
+        stage[nowPage].awnsers.sort((a, b) => 0.5 - Math.random());
 
         // load DOM
         let nowODom = document.getElementById("nowO");
@@ -380,6 +409,7 @@
         let inputTextDom = document.getElementById("inputText");
         let optionDom = document.getElementById("option");
         let optionButtonsDom = document.getElementById("optionButtons");
+        let questionDom = document.getElementById("question");
         let nowPageDom = document.getElementById("nowPage");
         let pageDom = document.getElementById("page");
         let testingDom = document.getElementById("testing");
@@ -388,7 +418,14 @@
         let awnserDom = document.getElementById("awnser");
         let awnserTextDom = document.getElementById("awnserText");
         let inputAwnserTextDom = document.getElementById("inputAwnserText");
-
+        let patternDom = document.getElementById("pattern");
+        let enDom = document.getElementById("en");
+        let krDom = document.getElementById("kr");
+        let nextQuestionDom = document.getElementById("nextQuestion");
+        let resultPageDom = document.getElementById("resultPage");
+        let perDom = document.getElementById("per");
+        let resultPageTextDom = document.getElementById("resultPageText");
+        let resultPageImageDom = document.getElementById("resultPageImage");
 
 
         const onAwnserBtn = (id, document) => {
@@ -418,14 +455,26 @@
         }
 
         const onResetBtn = () => {
-            stage[nowPage].history = [];
-            stage[nowPage].inputAwnser = [];
-            stage[nowPage].result = "default";
+            if(resultPage) {
+                location.reload(true);
+            } else {
+                stage[nowPage].history = [];
+                stage[nowPage].inputAwnser = [];
+                stage[nowPage].result = "default";
+            }
 
             render();
         }
 
-        onNavBtn = (value) => {
+        onNavBtn = (value, document) => {
+
+            if(document.innerText == "결과보기") {
+                resultPage = true;
+                return render();
+            }
+            else
+                resultPage = false;
+            
             if(value == -1 && nowPage <= 0)
                 return alert("첫 번째 문제입니다.");
 
@@ -440,6 +489,7 @@
             }
 
             nowPage += Number(value);
+            stage[nowPage].awnsers.sort((a, b) => 0.5 - Math.random());
 
             render();
         }
@@ -460,6 +510,49 @@
             // nav
             pageDom.innerText = page;
             nowPageDom.innerText = nowPage + 1;
+
+            // result page
+            if(resultPage) {
+                resultPageDom.style.display = "flex";
+                nextQuestionDom.style.display = "none";
+                questionDom.style.display = "none";
+                awnserDom.style.display = "none";
+                optionDom.style.display = "none";
+
+                let sum = Math.floor(nowO / (nowO + nowX) * 100);
+                let sumText = "";
+                perDom.innerText = sum + "% 맞췄습니다.";
+
+                // ** 결과에 따른 텍스트
+                if(sum >= 100)
+                    sumText = "천재입니다.";
+                else if(sum >= 90)
+                    sumText = "와우 짱!~";
+                else if(sum >= 80)
+                    sumText = "엄지 척!~";
+                else if(sum >= 70)
+                    sumText = "대단해요";
+                else if(sum >= 60)
+                    sumText = "참 잘했어요";
+                else if(sum >= 50)
+                    sumText = "잘했어요";
+                else if(sum >= 40)
+                    sumText = "노력하세요!";
+                else if(sum >= 30)
+                    sumText = "좀 더 노력하세요";
+                else if(sum >= 20)
+                    sumText = "복습 열심히!";
+                else if(sum >= 10)
+                    sumText = "공부합시다.";
+                else if(sum >= 0)
+                    sumText = "오늘부터 열공 ㅠㅠ";
+
+                resultPageTextDom.innerText = sumText;
+                return;
+            } else {
+                resultPageDom.style.display = "none";
+                nextQuestionDom.style.display = "block";
+            }
 
             // question
             questionTextDom.innerText = stage[nowPage].question;
@@ -519,17 +612,23 @@
                 awnserTextDom.innerText = stage[nowPage].awnser;
                 inputAwnserTextDom.innerText = text;
 
-                if(nowPage == page){
-                    
+                if(nowPage + 1 == page){
+                    nextQuestionDom.innerText = "결과보기";
+                } else {
+                    nextQuestionDom.innerText = "다음문제";
                 }
 
                 if(stage[nowPage].result == "win") {
                     resultTextDom.innerHTML = "<span class='resultO'>O</span> 맞았어요! 대단해요!"
-
+                    patternDom.style.display = "flex";
+                    enDom.innerText = stage[nowPage].pattern.en;
+                    krDom.innerText = stage[nowPage].pattern.kr;
+                    inputAwnserTextDom.style.display = "none";
                 }
                 if(stage[nowPage].result == "lose") {
                     resultTextDom.innerHTML = "<span class='resultX'>X</span> 틀렸어요! ㅠ.ㅠ 다시 해보세요!"
-
+                    patternDom.style.display = "none";
+                    inputAwnserTextDom.style.display = "flex";
                 }
 
             }
