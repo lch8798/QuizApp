@@ -6,6 +6,30 @@
     <title>Quiz</title>
     <style>
         *{ padding: 0; margin: 0; }
+
+        #alert {
+            position: fixed;
+            padding: 20px 30px;
+            width: 300px;
+            top: 120px;
+            left: 50%;
+            margin-left: -180px;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            background: #fff;
+            transition-duration: 0.5s;
+            animation: alertOn 0.5s;
+        }
+        @keyframes alertOn {
+            from {
+                opacity: 0;
+                top: -50px;
+            } to {
+                opacity: 1;
+                top: 120px;
+            }
+        }
+
         .App {
             display: flex;
             flex-direction: column;
@@ -58,6 +82,7 @@
             font-weight: bold;
         }            
         .App #resultPage > div > div > img {
+            width: 60%;
         }    
 
 
@@ -85,13 +110,9 @@
         .App .question .questionContents #sound {
             width: 30px;
             height: 30px;
-            border-radius: 30px;
-            border: 2px solid #000;
-            box-sizing: border-box;
-            background: #aaa;
             cursor: pointer;
-            background: url('https://cdn3.iconfinder.com/data/icons/eightyshades/512/28_Sound-512.png') no-repeat;
-            background-size: 60% 60%;
+            background: url('./images/play.png') no-repeat;
+            background-size: 100% 100%;
             background-position: 50% 50%;
             transition-duration: 0.2s;
             opacity: 0.5;
@@ -246,15 +267,15 @@
 </head>
 <body onload="render()">
     <div class="App">
-        <div class="score">
+        <div class="score" id="score">
             <div><span class="o">O</span><span id="nowO"></span></div>
             <div>/</div>
             <div><span class="x">X</span><span id="nowX"></span></div>
         </div>
         <div id="resultPage">
-            <div id="per">asd</div>
+            <div id="per"></div>
             <div class="resultPageView">
-                <div id="resultPageText">asd</div>
+                <div id="resultPageText"></div>
                 <div class="resultPageImage"><img id="resultPageImage" src=""></div>
             </div>
         </div>
@@ -290,117 +311,328 @@
             </div>
         </div>
     </div>
-    <div class="nav">
+    <div class="nav" id="pageNav">
         <div><span id="arrowLeft" onclick="onNavBtn(-1, this)"><</span><span id="nowPage"></span></div>
         <div>/</div>
         <div><span id="page"></span><span id="arrowRight" onclick="onNavBtn(1, this)">></span></div>
     </div>
+    <div id="alertWrap">
+    </div>
     <script>
         // 스테이지 정보 (** stage 배열 안에 객체 추가해서 문제 추가)
         let stage = [{
-            soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
-            question: "널 도와주길 원하면, 말만해", // ** 문제 질문
-            awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
-            pattern: { // ** 문제 패턴
-                en: "if you want me to ~",
-                kr: "~ 내가 널 도와주길 원한다면"
-            },
-            awnsers: [ // ** 문제 선택 버튼 키워드
-                "if",
-                "you",
-                "want",
-                "me",
-                "to",
-                "you,",
-                "all",
-                "you",
-                "have",
-                "help",
-                "to",
-                "do",
-                "is",
-                "ask"
+            id: 0,
+            patterns: [
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 1 - 1", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 1 - 2", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 1 - 3", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
             ],
+            pattern: {
+                soundLink: "", // ** 문제 듣기 음원
+                question: "", // ** 문제 질문4
+                awnser: "", // ** 문제 정답
+                pattern: { // ** 문제 패턴
+                    en: "",
+                    kr: ""
+                },
+                awnsers: [],
+            },
             history: [],
             inputAwnser: [],
             result: "default" // default, win, lose
         },
         {
-            soundLink: "",
-            question: "테스트용 1",
-            awnser: "1",
-            pattern: {
-                en: "1",
-                kr: "일"
-            },
-            awnsers: [
-                "1"
+            id: 1,
+            patterns: [
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 2 - 1", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 2 - 2", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 2 - 3", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
             ],
+            pattern: {
+                soundLink: "", // ** 문제 듣기 음원
+                question: "", // ** 문제 질문4
+                awnser: "", // ** 문제 정답
+                pattern: { // ** 문제 패턴
+                    en: "",
+                    kr: ""
+                },
+                awnsers: [],
+            },
             history: [],
             inputAwnser: [],
             result: "default" // default, win, lose
         },
-        {
-            soundLink: "",
-            question: "테스트용 2",
-            awnser: "1 2",
-            pattern: {
-                en: "1 2",
-                kr: "일 이"
-            },
-            awnsers: [
-                "1",
-                "2"
+        {   
+            id: 2,
+            patterns: [
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 3 - 1", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 3 - 2", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
+                {
+                    soundLink: "http://lch8798.dothome.co.kr/1.mp3", // ** 문제 듣기 음원
+                    question: "널 도와주길 원하면, 말만해 3 - 3", // ** 문제 질문4
+                    awnser: "if you want me to help you, all you have to do is ask", // ** 문제 정답
+                    pattern: { // ** 문제 패턴
+                        en: "if you want me to ~",
+                        kr: "~ 내가 널 도와주길 원한다면"
+                    },
+                    awnsers: [ // ** 문제 선택 버튼 키워드
+                        "if",
+                        "you",
+                        "want",
+                        "me",
+                        "to",
+                        "you,",
+                        "all",
+                        "you",
+                        "have",
+                        "help",
+                        "to",
+                        "do",
+                        "is",
+                        "ask"
+                    ],
+                },
             ],
-            history: [],
-            inputAwnser: [],
-            result: "default" // default, win, lose
-        },
-        {
-            soundLink: "",
-            question: "테스트용 3",
-            awnser: "1 2 3",
             pattern: {
-                en: "1 2 3",
-                kr: "일 이 삼"
+                soundLink: "", // ** 문제 듣기 음원
+                question: "", // ** 문제 질문4
+                awnser: "", // ** 문제 정답
+                pattern: { // ** 문제 패턴
+                    en: "",
+                    kr: ""
+                },
+                awnsers: [],
             },
-            awnsers: [
-                "1",
-                "2",
-                "3"
-            ],
-            history: [],
-            inputAwnser: [],
-            result: "default" // default, win, lose
-        },
-        {
-            soundLink: "",
-            question: "테스트용 4",
-            awnser: "1 2 3 4",
-            pattern: {
-                en: "1 2 3 4",
-                kr: "일 이 삼 사"
-            },
-            awnsers: [
-                "1",
-                "2",
-                "3",
-                "4"
-            ],
             history: [],
             inputAwnser: [],
             result: "default" // default, win, lose
         }];
 
         // 게임 정보
-        let nowO = 0,
+        let shortMode = false,
+            nowO = 0,
             nowX = 0,
-            page = stage.length,
+            page = 0,
             nowPage = 0,
             resultPage = false,
             winSoundLink = 'http://lch8798.dothome.co.kr/win.wav', // ** 문제 맞췄을 때 음원
             loseSoundLink = 'http://lch8798.dothome.co.kr/lose.wav'; // ** 문제 틀렸을 때 음원
-        stage[nowPage].awnsers.sort((a, b) => 0.5 - Math.random());
+
+        // JS 쿼리 처리
+        let findStr = "?quizNum=";
+        let href = window.location.href;
+        let queryIndex = href.indexOf(findStr);
+        let query = 1;
+
+        if(queryIndex != -1) {
+            query = href.substring(queryIndex + findStr.length, href.length);
+            nowPage = Number(query) - 1;
+            let temp = stage[nowPage];
+            stage = [];
+            stage[0] = temp;
+            nowPage = 0;
+            shortMode = true;
+        }
+
+        page = stage.length;
+
+        stage[nowPage].pattern.awnsers.sort((a, b) => 0.5 - Math.random());
+
+        // 랜덤 패턴 대입
+        for(let i in stage)
+            stage[i].pattern = stage[i].patterns[Math.floor(Math.random() * stage[i].patterns.length) + 0];
 
         // load DOM
         let nowODom = document.getElementById("nowO");
@@ -426,7 +658,9 @@
         let perDom = document.getElementById("per");
         let resultPageTextDom = document.getElementById("resultPageText");
         let resultPageImageDom = document.getElementById("resultPageImage");
-
+        let pageNavDom = document.getElementById("pageNav");
+        let scoreDom = document.getElementById("score");
+        let alertWarpDom = document.getElementById("alertWrap");
 
         const onAwnserBtn = (id, document) => {
             stage[nowPage].inputAwnser.push(document.innerText);
@@ -435,9 +669,9 @@
         }
 
         const onSubmitBtn = (clickNav) => {
-            if(!clickNav && stage[nowPage].awnsers.length != stage[nowPage].inputAwnser.length)
-                return alert("단어를 모두 나열하세요");
-            if(stage[nowPage].awnser == inputTextDom.innerText) {
+            if(!clickNav && stage[nowPage].pattern.awnsers.length != stage[nowPage].inputAwnser.length)
+                return alertOn(alertWarpDom, "단어를 모두 나열하세요", 2000);
+            if(stage[nowPage].pattern.awnser == inputTextDom.innerText) {
                 stage[nowPage].result = "win";
             } else {
                 stage[nowPage].result = "lose";
@@ -468,18 +702,20 @@
 
         onNavBtn = (value, document) => {
 
+            if(shortMode)
+                return location.reload(true);
+
             if(document.innerText == "결과보기") {
                 resultPage = true;
                 return render();
-            }
-            else
+            } else
                 resultPage = false;
             
             if(value == -1 && nowPage <= 0)
-                return alert("첫 번째 문제입니다.");
+                return alertOn(alertWarpDom, "첫 번째 문제입니다.", 2000);
 
             if(value == 1 && nowPage + 1 >= page)
-                return alert("마지막 문제입니다.");
+                return alertOn(alertWarpDom, "마지막 문제입니다.", 2000);
 
             if(value == -1) {
 
@@ -489,12 +725,31 @@
             }
 
             nowPage += Number(value);
-            stage[nowPage].awnsers.sort((a, b) => 0.5 - Math.random());
+            stage[nowPage].pattern.awnsers.sort((a, b) => 0.5 - Math.random());
 
             render();
         }
 
+        alertOn = (parentDom, text, life) => {
+            let div = document.createElement("div");
+
+            div.id = "alert";
+            div.innerText = text;
+
+            parentDom.appendChild(div);
+            
+            setTimeout(() => {
+                parentDom.removeChild(div);
+            }, life);
+        }
+
         const render = () => {
+            if(shortMode) {
+                scoreDom.style.display = "none";
+                pageNavDom.style.display = "none";
+                questionDom.style.marginTop = "20px";
+            }
+
             // score
             nowO = 0;
             nowX = 0;
@@ -504,6 +759,7 @@
                 if(stage[key].result == "lose")
                     nowX++;
             }
+
             nowODom.innerText = nowO;
             nowXDom.innerText = nowX;
 
@@ -521,31 +777,47 @@
 
                 let sum = Math.floor(nowO / (nowO + nowX) * 100);
                 let sumText = "";
+                let sumImageName = "1.gif";
                 perDom.innerText = sum + "% 맞췄습니다.";
 
-                // ** 결과에 따른 텍스트
-                if(sum >= 100)
+                // ** 결과에 따른 텍스트와 이미지 셋팅
+                if(sum >= 100) {
                     sumText = "천재입니다.";
-                else if(sum >= 90)
+                    sumImageName = "1.gif";
+                } else if(sum >= 90){
                     sumText = "와우 짱!~";
-                else if(sum >= 80)
+                    sumImageName = "1.gif";
+                } else if(sum >= 80){
                     sumText = "엄지 척!~";
-                else if(sum >= 70)
+                    sumImageName = "2.gif";
+                } else if(sum >= 70){
                     sumText = "대단해요";
-                else if(sum >= 60)
+                    sumImageName = "2.gif";
+                } else if(sum >= 60){
                     sumText = "참 잘했어요";
-                else if(sum >= 50)
+                    sumImageName = "3.gif";
+                } else if(sum >= 50){
                     sumText = "잘했어요";
-                else if(sum >= 40)
+                    sumImageName = "3.gif";
+                } else if(sum >= 40){
                     sumText = "노력하세요!";
-                else if(sum >= 30)
+                    sumImageName = "4.gif";
+                } else if(sum >= 30){
                     sumText = "좀 더 노력하세요";
-                else if(sum >= 20)
+                    sumImageName = "4.gif";
+                } else if(sum >= 20){
                     sumText = "복습 열심히!";
-                else if(sum >= 10)
+                    sumImageName = "5.gif";
+                } else if(sum >= 10){
                     sumText = "공부합시다.";
-                else if(sum >= 0)
+                    sumImageName = "5.gif";
+                } else if(sum >= 0){
                     sumText = "오늘부터 열공 ㅠㅠ";
+                    sumImageName = "5.gif";
+                }
+ 
+                // 점수에 따른 이미지
+                resultPageImageDom.src = './images/' + sumImageName;
 
                 resultPageTextDom.innerText = sumText;
                 return;
@@ -555,7 +827,7 @@
             }
 
             // question
-            questionTextDom.innerText = stage[nowPage].question;
+            questionTextDom.innerText = stage[nowPage].pattern.question;
             let text = "";
             for(let key in stage[nowPage].inputAwnser) {
                 if(key == 0)
@@ -563,13 +835,14 @@
                 else
                     text += " " + stage[nowPage].inputAwnser[key];
             }
+            
             inputTextDom.innerText = text;
 
             // awnser buttons
             while(optionButtonsDom.hasChildNodes())
                 optionButtonsDom.removeChild(optionButtonsDom.firstChild);
 
-            for(let key in stage[nowPage].awnsers) {
+            for(let key in stage[nowPage].pattern.awnsers) {
                 let overlap = false;
                 for(let i in stage[nowPage].history) {
                     if(key == Number(stage[nowPage].history[i]))
@@ -577,7 +850,7 @@
                 }
                 if(!overlap) {
                     let div = document.createElement("div");
-                    let textNode = document.createTextNode(stage[nowPage].awnsers[key]);
+                    let textNode = document.createTextNode(stage[nowPage].pattern.awnsers[key]);
                     div.addEventListener('click', function(e) {
                         onAwnserBtn(key, e.target);
                     });
@@ -609,24 +882,24 @@
                 inputTextDom.style.display = "none";
                 optionDom.style.display = "none";
                 awnserDom.style.display = "flex";
-                awnserTextDom.innerText = stage[nowPage].awnser;
+                awnserTextDom.innerText = stage[nowPage].pattern.awnser;
                 inputAwnserTextDom.innerText = text;
 
-                if(nowPage + 1 == page){
+                if(nowPage + 1 == page && !shortMode){
                     nextQuestionDom.innerText = "결과보기";
                 } else {
                     nextQuestionDom.innerText = "다음문제";
                 }
 
                 if(stage[nowPage].result == "win") {
-                    resultTextDom.innerHTML = "<span class='resultO'>O</span> 맞았어요! 대단해요!"
+                    resultTextDom.innerHTML = "<span class='resultO'>O</span> 맞았어요! 대단해요!";
                     patternDom.style.display = "flex";
-                    enDom.innerText = stage[nowPage].pattern.en;
-                    krDom.innerText = stage[nowPage].pattern.kr;
+                    enDom.innerText = stage[nowPage].pattern.pattern.en;
+                    krDom.innerText = stage[nowPage].pattern.pattern.kr;
                     inputAwnserTextDom.style.display = "none";
                 }
                 if(stage[nowPage].result == "lose") {
-                    resultTextDom.innerHTML = "<span class='resultX'>X</span> 틀렸어요! ㅠ.ㅠ 다시 해보세요!"
+                    resultTextDom.innerHTML = "<span class='resultX'>X</span> 틀렸어요! ㅠ.ㅠ 다시 해보세요!";
                     patternDom.style.display = "none";
                     inputAwnserTextDom.style.display = "flex";
                 }
@@ -635,7 +908,7 @@
         }
 
         const playSound = () => {
-            let audio = new Audio(stage[nowPage].soundLink);
+            let audio = new Audio(stage[nowPage].pattern.soundLink);
             audio.play();
         }
 
